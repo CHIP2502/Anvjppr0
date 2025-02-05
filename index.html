@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Trực Nhật</title>
+    <style>
+        /* Reset cơ bản để làm sạch mặc định */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body và nền trang */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Container chính của trang */
+        .schedule-container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tiêu đề */
+        h2 {
+            font-size: 24px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* Các đoạn văn về lịch trực nhật */
+        h3 {
+            font-size: 18px;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        /* Nút bấm */
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        /* Hiệu ứng hover khi chuột di qua nút */
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Định dạng cho khi hiển thị lịch trực nhật ngày mai */
+        #tomorrowSchedule {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const pairs = [
+                "Việt - Long", "Tùng - Giáo", "Quỳnh - Huỳnh", "An - Minh Ánh", "Ngọc Ánh - Tú", "Tuân - Vân Anh", "Hằng - Nghĩa"
+            ];
+
+            function getNextWeekday(date, offset) {
+                let result = new Date(date);
+                result.setDate(result.getDate() + offset);
+                // Bỏ qua thứ 7 và chủ nhật
+                while (result.getDay() === 0 || result.getDay() === 6) {
+                    result.setDate(result.getDate() + 1);
+                }
+                return result;
+            }
+
+            // Lấy ngày hôm nay và đảm bảo không phải là thứ 7 hay chủ nhật
+            let today = new Date();
+
+            // Điều chỉnh giờ về múi giờ Việt Nam (GMT+7)
+            today.setHours(today.getHours() + 7);  // Thêm 7 giờ vào giờ hiện tại để đạt được giờ Việt Nam
+
+            // Nếu hôm nay là Thứ 7 hoặc Chủ nhật, chuyển sang Thứ 2 tuần sau
+            if (today.getDay() === 6) { 
+                today.setDate(today.getDate() + 2); // Chuyển sang Thứ 2 tuần sau
+            } else if (today.getDay() === 0) {
+                today.setDate(today.getDate() + 1); // Chuyển sang Thứ 2 tuần sau
+            }
+
+            // Đảm bảo hôm nay bắt đầu từ cặp "Việt - Long"
+            // Chúng ta sẽ tính cặp trực nhật theo thứ tự tuần, bắt đầu từ "Việt - Long" cho hôm nay (Thứ 4)
+            let currentIndex = (today.getDay() + 3) % pairs.length; // Bắt đầu từ "Việt - Long" nếu hôm nay là Thứ 4
+
+            // Đảm bảo chỉ số không vượt quá số cặp
+            if (currentIndex < 0) currentIndex = 0;
+
+            let todayPair = pairs[currentIndex]; // Cặp trực nhật hôm nay
+            let tomorrow = getNextWeekday(today, 1);
+            let tomorrowPair = pairs[(currentIndex + 1) % pairs.length];
+
+            // Hiển thị lịch hôm nay và ngày mai (chỉ ngày, không có giờ và năm)
+            document.getElementById("todaySchedule").textContent = `Hôm nay: ${today.toISOString().split('T')[0]} : ${todayPair}`;
+            document.getElementById("tomorrowSchedule").textContent = `Ngày mai: ${tomorrow.toISOString().split('T')[0]} : ${tomorrowPair}`;
+
+            // Khi bấm nút, hiển thị lịch trực nhật của ngày mai và ẩn nút
+            document.getElementById("showTomorrowSchedule").addEventListener("click", function() {
+                document.getElementById("tomorrowSchedule").style.display = "block";
+                document.getElementById("showTomorrowSchedule").style.display = "none";
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="schedule-container">
+        <h2>Lịch Trực Nhật</h2>
+        <h3 id="todaySchedule">Hôm nay: </h3>
+        <h3 id="tomorrowSchedule" style="display: none;">Ngày mai: </h3>
+        <button id="showTomorrowSchedule">Hiển thị lịch trực nhật ngày mai</button>
+    </div>
+</body>
+</html>
