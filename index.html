@@ -1815,7 +1815,7 @@ button {
     function getNextWeekday(date, offset) {
         let result = new Date(date);
         result.setDate(result.getDate() + offset);
-        while (result.getDay() === 0 || result.getDay() === 6) {
+        while (result.getDay() === 0 || result.getDay() === 6) { // Nếu là thứ 7 hoặc CN, lùi đến thứ 2
             result.setDate(result.getDate() + 1);
         }
         return result;
@@ -1830,12 +1830,12 @@ button {
         today.setDate(today.getDate() + 1); // Nếu là Chủ nhật, chuyển sang thứ 2
     }
 
-    // Tìm chỉ số của cặp trực nhật hôm nay theo thứ trong tuần (Thứ 2 = index 0)
-    let currentIndex = (today.getDay() - 1) % pairs.length; // Thứ 2 = 0, Thứ 3 = 1,...
+    // Chỉ số bắt đầu của tuần (Thứ Hai = index 0)
+    let weekDayIndex = today.getDay() - 1; // Thứ Hai = 0, Thứ Ba = 1, ..., Thứ Sáu = 4
 
-    let todayPair = pairs[currentIndex];
+    let todayPair = pairs[weekDayIndex]; // Lấy cặp tương ứng với thứ trong tuần
     let tomorrow = getNextWeekday(today, 1);
-    let tomorrowPair = pairs[(currentIndex + 1) % pairs.length];
+    let tomorrowPair = pairs[(weekDayIndex + 1) % pairs.length]; // Lấy cặp cho ngày mai
 
     // Hiển thị lịch trực nhật
     document.getElementById("todaySchedule").textContent = `Hôm nay: ${today.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })} - ${todayPair}`;
