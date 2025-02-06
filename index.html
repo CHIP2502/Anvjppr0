@@ -1802,54 +1802,51 @@ button {
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const pairs = [
-                "Việt - Long", "Tùng - Giáo", "Quỳnh - Huỳnh", "An - Minh Ánh", "Ngọc Ánh - Tú", "Tuân - Vân Anh", "Hằng - Nghĩa"
-            ];
+    const pairs = [
+        "Việt - Long", "Tùng - Giáo", "Quỳnh - Huỳnh", "An - Minh Ánh", "Ngọc Ánh - Tú", "Tuân - Vân Anh", "Hằng - Nghĩa"
+    ];
 
-            function getNextWeekday(date, offset) {
-                let result = new Date(date);
-                result.setDate(result.getDate() + offset);
-                // Bỏ qua thứ 7 và chủ nhật
-                while (result.getDay() === 0 || result.getDay() === 6) {
-                    result.setDate(result.getDate() + 1);
-                }
-                return result;
-            }
+    // Hàm lấy thời gian theo giờ Việt Nam (GMT+7)
+    function getVietnamTime() {
+        return new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
+    }
 
-            // Lấy ngày hôm nay và đảm bảo không phải là thứ 7 hay chủ nhật
-            let today = new Date();
+    // Hàm tìm ngày làm việc tiếp theo (bỏ qua thứ 7 và Chủ nhật)
+    function getNextWeekday(date, offset) {
+        let result = new Date(date);
+        result.setDate(result.getDate() + offset);
+        while (result.getDay() === 0 || result.getDay() === 6) {
+            result.setDate(result.getDate() + 1);
+        }
+        return result;
+    }
 
-            // Điều chỉnh giờ về múi giờ Việt Nam (GMT+7)
-            today.setHours(today.getHours() + 7);  // Thêm 7 giờ vào giờ hiện tại để đạt được giờ Việt Nam
+    let today = getVietnamTime();
 
-            // Nếu hôm nay là Thứ 7 hoặc Chủ nhật, chuyển sang Thứ 2 tuần sau
-            if (today.getDay() === 6) { 
-                today.setDate(today.getDate() + 2); // Chuyển sang Thứ 2 tuần sau
-            } else if (today.getDay() === 0) {
-                today.setDate(today.getDate() + 1); // Chuyển sang Thứ 2 tuần sau
-            }
+    // Nếu hôm nay là thứ 7 hoặc Chủ nhật, chuyển sang thứ 2 tuần sau
+    if (today.getDay() === 6) {
+        today.setDate(today.getDate() + 2); // Nếu là thứ 7, chuyển sang thứ 2
+    } else if (today.getDay() === 0) {
+        today.setDate(today.getDate() + 1); // Nếu là Chủ nhật, chuyển sang thứ 2
+    }
 
-            // Đảm bảo hôm nay bắt đầu từ cặp "Việt - Long"
-            // Chúng ta sẽ tính cặp trực nhật theo thứ tự tuần, bắt đầu từ "Việt - Long" cho hôm nay (Thứ 4)
-            let currentIndex = (today.getDay() + 3) % pairs.length; // Bắt đầu từ "Việt - Long" nếu hôm nay là Thứ 4
+    // Tìm chỉ số của cặp trực nhật hôm nay theo thứ trong tuần (Thứ 2 = index 0)
+    let currentIndex = (today.getDay() - 1) % pairs.length; // Thứ 2 = 0, Thứ 3 = 1,...
 
-            // Đảm bảo chỉ số không vượt quá số cặp
-            if (currentIndex < 0) currentIndex = 0;
+    let todayPair = pairs[currentIndex];
+    let tomorrow = getNextWeekday(today, 1);
+    let tomorrowPair = pairs[(currentIndex + 1) % pairs.length];
 
-            let todayPair = pairs[currentIndex]; // Cặp trực nhật hôm nay
-            let tomorrow = getNextWeekday(today, 1);
-            let tomorrowPair = pairs[(currentIndex + 1) % pairs.length];
+    // Hiển thị lịch trực nhật
+    document.getElementById("todaySchedule").textContent = `Hôm nay: ${today.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })} - ${todayPair}`;
+    document.getElementById("tomorrowSchedule").textContent = `Ngày mai: ${tomorrow.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })} - ${tomorrowPair}`;
 
-            // Hiển thị lịch hôm nay và ngày mai (chỉ ngày, không có giờ và năm)
-            document.getElementById("todaySchedule").textContent = `Hôm nay: ${today.toISOString().split('T')[0]} : ${todayPair}`;
-            document.getElementById("tomorrowSchedule").textContent = `Ngày mai: ${tomorrow.toISOString().split('T')[0]} : ${tomorrowPair}`;
-
-            // Khi bấm nút, hiển thị lịch trực nhật của ngày mai và ẩn nút
-            document.getElementById("showTomorrowSchedule").addEventListener("click", function() {
-                document.getElementById("tomorrowSchedule").style.display = "block";
-                document.getElementById("showTomorrowSchedule").style.display = "none";
-            });
-        });
+    // Khi bấm nút, hiển thị lịch trực nhật ngày mai và ẩn nút
+    document.getElementById("showTomorrowSchedule").addEventListener("click", function() {
+        document.getElementById("tomorrowSchedule").style.display = "block";
+        document.getElementById("showTomorrowSchedule").style.display = "none";
+    });
+});
     </script>
 </head>
 <body>
